@@ -1,9 +1,12 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/twinj/uuid"
 
 	"github.com/CloudHammer/Seeds/src/utils"
 
@@ -83,6 +86,9 @@ func getUserList(context *gin.Context) {
 
 	for _, user := range rawUsers {
 		users = append(users, gin.H{
+			"id":              user.Id,
+			"email":           user.Email,
+			"uuid":            uuid.NewV3(uuid.NameSpaceDNS, fmt.Sprintf("%d|%s", user.Id, user.Passwd)).String(),
 			"method":          user.Method,
 			"obfs":            user.Obfs,
 			"obfs_param":      user.ObfsParam,
@@ -93,7 +99,6 @@ func getUserList(context *gin.Context) {
 			"node_speedlimit": user.NodeSpeedlimit,
 			"disconnect_ip":   user.DisconnectIp,
 			"is_multi_user":   user.IsMultiUser,
-			"id":              user.Id,
 			"port":            user.Port,
 			"passwd":          user.Passwd,
 			"u":               user.U,

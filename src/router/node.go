@@ -74,6 +74,7 @@ func getInfo(context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{
 		"ret": 1,
 		"data": gin.H{
+			"server":          node.Server,
 			"node_group":      node.NodeGroup,
 			"node_class":      node.NodeClass,
 			"node_speedlimit": node.NodeSpeedlimit,
