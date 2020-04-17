@@ -87,7 +87,6 @@ func getUserList(context *gin.Context) {
 	for _, user := range rawUsers {
 		users = append(users, gin.H{
 			"id":              user.Id,
-			"email":           user.Email,
 			"uuid":            uuid.NewV3(uuid.NameSpaceDNS, fmt.Sprintf("%d|%s", user.Id, user.Passwd)).String(),
 			"method":          user.Method,
 			"obfs":            user.Obfs,
