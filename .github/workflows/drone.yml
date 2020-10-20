@@ -1,0 +1,47 @@
+workspace:
+  base: /go
+  path: src/github.com/CloudHammer/Seeds
+
+kind: pipeline
+name: default
+
+steps:
+  - name: build
+    image: golang:latest
+    environment:
+      GOPATH: /go
+      CGO_ENABLED: '0'
+      MAIN_PACKAGE: github.com/CloudHammer/Seeds/src/main 
+    commands:
+      - go get -u github.com/golang/dep/cmd/dep
+      - dep ensure -v
+      - mkdir builds
+      - GOOS=linux GOARCH=amd64 go build -o builds/seeds-linux-amd64 $MAIN_PACKAGE
+      - GOOS=linux GOARCH=arm go build -o builds/seeds-linux-arm $MAIN_PACKAGE
+      - GOOS=darwin GOARCH=amd64 go build -o builds/seeds-darwin-amd64 $MAIN_PACKAGE
+      - GOOS=freebsd GOARCH=amd64 go build -o builds/seeds-freebsd-amd64 $MAIN_PACKAGE
+      - GOOS=windows GOARCH=amd64 go build -o builds/seeds-windows-amd64.exe $MAIN_PACKAGE
+
+  - name: github_release
+    image: plugins/github-release      
+    when:
+        event: tag
+    settings:
+      files:
+        - builds/*
+      checksum:
+        - sha1
+        - sha256
+      api_key:
+        from_secret: github_token
+      
+
+  - name: docker_release
+    image: plugins/docker
+    settings:
+      repo: cloudhammer/seeds
+      auto_tag: true
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
